@@ -4,7 +4,7 @@
     {
         public int VendorId { get; set; }
         public string VendorName { get; set; }
-        public List<Product> Products { get; set; } 
+      
     }
 
 }

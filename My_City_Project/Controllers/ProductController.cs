@@ -16,34 +16,35 @@ namespace My_City_Project.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAllProducts()
         {
             var products = _context.Products.ToList();
             return Ok(products);
         }
+
         [HttpPost]
-        public IActionResult Add(Product product)
+        public IActionResult CreateProduct(Product product)
         {
             _context.Products.Add(product);
             _context.SaveChanges();
             return Ok("Ürün eklendi");
         }
 
-   
         [HttpPut("{id}")]
-        public IActionResult Update(int id, Product product)
+        public IActionResult UpdateProduct(int id, Product product)
         {
             var value = _context.Products.Find(id);
             if (value == null)
                 return NotFound("Ürün bulunamadı");
-             value.ProductName = product.ProductName;
+
+            value.ProductName = product.ProductName;
             value.ProductPrice = product.ProductPrice;
-                 _context.SaveChanges();
+            _context.SaveChanges();
             return Ok("Ürün güncellendi");
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteProduct(int id)
         {
             var product = _context.Products.Find(id);
             if (product == null)

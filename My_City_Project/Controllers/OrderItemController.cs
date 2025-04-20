@@ -2,7 +2,6 @@
 using My_City_Project.Entities;
 using My_City_Project.Data;
 
-
 namespace My_City_Project.Controllers
 {
     [ApiController]
@@ -17,13 +16,13 @@ namespace My_City_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetAllOrderItems()
         {
             return Ok(_context.OrderItems.ToList());
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult GetOrderItemById(int id)
         {
             var item = _context.OrderItems.Find(id);
             if (item == null) return NotFound();
@@ -31,7 +30,7 @@ namespace My_City_Project.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(OrderItem item)
+        public IActionResult CreateOrderItem(OrderItem item)
         {
             _context.OrderItems.Add(item);
             _context.SaveChanges();
@@ -39,7 +38,7 @@ namespace My_City_Project.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, OrderItem updatedItem)
+        public IActionResult UpdateOrderItem(int id, OrderItem updatedItem)
         {
             var item = _context.OrderItems.Find(id);
             if (item == null) return NotFound();
@@ -54,7 +53,7 @@ namespace My_City_Project.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteOrderItem(int id)
         {
             var item = _context.OrderItems.Find(id);
             if (item == null) return NotFound();

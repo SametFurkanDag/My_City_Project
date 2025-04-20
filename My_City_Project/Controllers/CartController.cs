@@ -16,7 +16,6 @@ namespace My_City_Project.Controllers
             _context = context;
         }
 
-        // Sepeti getir
         [HttpGet]
         public IActionResult GetCart()
         {
@@ -38,14 +37,21 @@ namespace My_City_Project.Controllers
 
             return Ok(cartItems);
         }
-
         [HttpPost]
         public IActionResult AddToCart(Cart item)
         {
+            var product = _context.Products.Find(item.ProductId);
+            if (product == null)
+                return NotFound("Ürün bulunamadı");
+
+            item.ProductName = product.ProductName;
+            item.TotalPrice = product.ProductPrice * item.Quantity;
+
             _context.Carts.Add(item);
             _context.SaveChanges();
             return Ok(item);
         }
+
 
         [HttpDelete("{id}")]
         public IActionResult DeleteFromCart(int id)

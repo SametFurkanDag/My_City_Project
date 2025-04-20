@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using My_City_Project.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace My_City_Project.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplictionContextModelSnapshot : ModelSnapshot
+    [Migration("20250420074722_mig1")]
+    partial class mig1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,44 +27,28 @@ namespace My_City_Project.Migrations
 
             modelBuilder.Entity("My_City_Project.Entities.Cart", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Carts");
-                });
-
-            modelBuilder.Entity("My_City_Project.Entities.CartItem", b =>
-                {
-                    b.Property<int>("CartItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CartItemId"));
-
                     b.Property<int>("CartId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CartId"));
 
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.HasKey("CartItemId");
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
 
-                    b.HasIndex("CartId");
+                    b.HasKey("CartId");
 
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("CartItem");
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("My_City_Project.Entities.Order", b =>
@@ -78,9 +65,10 @@ namespace My_City_Project.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("OrderId");
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
 
-                    b.HasIndex("CartId");
+                    b.HasKey("OrderId");
 
                     b.ToTable("Orders");
                 });
@@ -155,8 +143,6 @@ namespace My_City_Project.Migrations
 
                     b.HasKey("ProductId");
 
-                    b.HasIndex("VendorId");
-
                     b.ToTable("Products");
                 });
 
@@ -168,10 +154,14 @@ namespace My_City_Project.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ReportId"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ReportDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ReportName")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -197,40 +187,31 @@ namespace My_City_Project.Migrations
                     b.ToTable("Vendors");
                 });
 
-            modelBuilder.Entity("My_City_Project.Entities.CartItem", b =>
+            modelBuilder.Entity("My_City_Project.Model.Entities.Reseller", b =>
                 {
-                    b.HasOne("My_City_Project.Entities.Cart", "Cart")
-                        .WithMany("CartItems")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("ResellerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                    b.HasOne("My_City_Project.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ResellerId"));
 
-                    b.Navigation("Cart");
+                    b.Property<string>("ResellerLocation")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Navigation("Product");
-                });
+                    b.Property<string>("ResellerName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-            modelBuilder.Entity("My_City_Project.Entities.Order", b =>
-                {
-                    b.HasOne("My_City_Project.Entities.Cart", "Cart")
-                        .WithMany()
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasKey("ResellerId");
 
-                    b.Navigation("Cart");
+                    b.ToTable("Resellers");
                 });
 
             modelBuilder.Entity("My_City_Project.Entities.OrderItem", b =>
                 {
                     b.HasOne("My_City_Project.Entities.Order", "Order")
-                        .WithMany("OrderItems")
+                        .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -244,32 +225,6 @@ namespace My_City_Project.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("My_City_Project.Entities.Product", b =>
-                {
-                    b.HasOne("My_City_Project.Entities.Vendor", "Vendor")
-                        .WithMany("Products")
-                        .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Vendor");
-                });
-
-            modelBuilder.Entity("My_City_Project.Entities.Cart", b =>
-                {
-                    b.Navigation("CartItems");
-                });
-
-            modelBuilder.Entity("My_City_Project.Entities.Order", b =>
-                {
-                    b.Navigation("OrderItems");
-                });
-
-            modelBuilder.Entity("My_City_Project.Entities.Vendor", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

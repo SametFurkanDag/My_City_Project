@@ -16,13 +16,14 @@ namespace My_City_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetAllResellers()
         {
-            return Ok(_context.Resellers.ToList());
+            var resellers = _context.Resellers.ToList();
+            return Ok(resellers);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult GetReseller(int id)
         {
             var reseller = _context.Resellers.Find(id);
             if (reseller == null) return NotFound();
@@ -30,15 +31,15 @@ namespace My_City_Project.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(Reseller reseller)
+        public IActionResult CreateReseller(Reseller reseller)
         {
             _context.Resellers.Add(reseller);
             _context.SaveChanges();
-            return CreatedAtAction(nameof(Get), new { id = reseller.ResellerId }, reseller);
+            return CreatedAtAction(nameof(GetReseller), new { id = reseller.ResellerId }, reseller);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, Reseller updatedReseller)
+        public IActionResult UpdateReseller(int id, Reseller updatedReseller)
         {
             var reseller = _context.Resellers.Find(id);
             if (reseller == null) return NotFound();
@@ -51,14 +52,14 @@ namespace My_City_Project.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteReseller(int id)
         {
             var reseller = _context.Resellers.Find(id);
             if (reseller == null) return NotFound();
 
             _context.Resellers.Remove(reseller);
             _context.SaveChanges();
-            return Ok();
+            return Ok("Reseller deleted successfully");
         }
     }
 }

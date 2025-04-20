@@ -16,49 +16,49 @@ namespace My_City_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetAllVendors()
         {
-            return Ok(_context.Vendors.ToList());
+            var vendors = _context.Vendors.ToList();
+            return Ok(vendors);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult GetVendorById(int id)
         {
             var vendor = _context.Vendors.Find(id);
-            if (vendor == null) return NotFound();
+            if (vendor == null) return NotFound("Satıcı bulunamadı");
             return Ok(vendor);
         }
 
         [HttpPost]
-        public IActionResult Post(Vendor vendor)
+        public IActionResult CreateVendor(Vendor vendor)
         {
             _context.Vendors.Add(vendor);
             _context.SaveChanges();
-            return Ok(vendor);
+            return CreatedAtAction(nameof(GetVendorById), new { id = vendor.VendorId }, vendor);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, Vendor updatedVendor)
+        public IActionResult UpdateVendor(int id, Vendor updatedVendor)
         {
             var vendor = _context.Vendors.Find(id);
-            if (vendor == null) return NotFound();
+            if (vendor == null) return NotFound("Satıcı bulunamadı");
 
             vendor.VendorName = updatedVendor.VendorName;
-           
 
             _context.SaveChanges();
             return Ok(vendor);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteVendor(int id)
         {
             var vendor = _context.Vendors.Find(id);
-            if (vendor == null) return NotFound();
+            if (vendor == null) return NotFound("Satıcı bulunamadı");
 
             _context.Vendors.Remove(vendor);
             _context.SaveChanges();
-            return Ok();
+            return Ok("Satıcı silindi");
         }
     }
 }

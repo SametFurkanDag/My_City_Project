@@ -15,30 +15,32 @@ namespace My_City_Project.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAllPlaces()
         {
             var places = _context.Places.ToList();
             return Ok(places);
         }
+
         [HttpPost]
-        public IActionResult Add(Places places)
+        public IActionResult CreatePlace(Places place)
         {
-            _context.Places.Add(places);
+            _context.Places.Add(place);
             _context.SaveChanges();
             return Ok("Yer eklendi");
         }
+
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeletePlace(int id)
         {
-            var places = _context.Places.Find(id);
-            if (places == null)
+            var place = _context.Places.Find(id);
+            if (place == null)
                 return NotFound("Yer bulunamadı");
 
-            _context.Places.Remove(places);
+            _context.Places.Remove(place);
             _context.SaveChanges();
             return Ok("Yer silindi");
         }
-
     }
 }

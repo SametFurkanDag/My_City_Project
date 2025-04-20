@@ -16,28 +16,29 @@ namespace My_City_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetAllReports()
         {
-            return Ok(_context.Reports.ToList());
+            var reports = _context.Reports.ToList();
+            return Ok(reports);
         }
 
         [HttpPost]
-        public IActionResult Post(Report report)
+        public IActionResult CreateReport(Report report)
         {
             _context.Reports.Add(report);
             _context.SaveChanges();
-            return CreatedAtAction(nameof(Get), new { id = report.ReportId }, report);
+            return CreatedAtAction(nameof(GetAllReports), new { id = report.ReportId }, report);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteReport(int id)
         {
             var report = _context.Reports.Find(id);
             if (report == null) return NotFound();
 
             _context.Reports.Remove(report);
             _context.SaveChanges();
-            return Ok();
+            return Ok("Rapor silindi");
         }
     }
 }

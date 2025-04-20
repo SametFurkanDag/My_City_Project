@@ -16,13 +16,13 @@ namespace My_City_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetAllOrders()
         {
             return Ok(_context.Orders.ToList());
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult GetOrderById(int id)
         {
             var order = _context.Orders.Find(id);
             if (order == null) return NotFound();
@@ -30,15 +30,22 @@ namespace My_City_Project.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(Order order)
+        public IActionResult CreateOrder(Order order)
         {
+            var cart = _context.Carts.Find(order.CartId);
+            if (cart == null)
+                return NotFound("Sepet bulunamadı");
+
+            order.TotalAmount = cart.TotalPrice;
+            order.OrderDate = DateTime.Now;
+
             _context.Orders.Add(order);
             _context.SaveChanges();
             return Ok(order);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, Order updatedOrder)
+        public IActionResult UpdateOrder(int id, Order updatedOrder)
         {
             var order = _context.Orders.Find(id);
             if (order == null) return NotFound();
@@ -52,7 +59,7 @@ namespace My_City_Project.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult DeleteOrder(int id)
         {
             var order = _context.Orders.Find(id);
             if (order == null) return NotFound();
