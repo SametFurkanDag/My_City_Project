@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using My_City_Project.Data;
-using My_City_Project.Entities;
+using My_City_Project.Model.Entities;
 
 namespace My_City_Project.Controllers
 {

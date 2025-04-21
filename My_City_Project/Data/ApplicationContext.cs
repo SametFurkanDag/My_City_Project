@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using My_City_Project.Entities;
 using My_City_Project.Model.Entities;
 
 namespace My_City_Project.Data

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace My_City_Project.Entities
+namespace My_City_Project.Model.Entities
 {
     public class Places
     {
