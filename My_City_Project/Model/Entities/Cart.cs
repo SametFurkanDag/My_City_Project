@@ -1,13 +1,17 @@
-﻿namespace My_City_Project.Model.Entities
+﻿using NPOI.HPSF;
+using System.ComponentModel.DataAnnotations;
+
+
+namespace My_City_Project.Model.Entities
 {
     public class Cart
     {
-        public int CartId { get; set; }
-        public int ProductId { get; set; }
+        [Key]
+        public Guid CartId { get; set; } = Guid.NewGuid();
+        public Guid ProductId { get; set; }
         public int Quantity { get; set; }
-
-        public string ProductName { get; set; }
         public decimal TotalPrice { get; set; }
     }
+
 
 }

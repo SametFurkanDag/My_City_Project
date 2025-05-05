@@ -1,57 +1,74 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using My_City_Project.Data;
 using My_City_Project.Model.Entities;
+using My_City_Project.Services.Interfaces;
+using System;
+using System.Collections.Generic;
 
 namespace My_City_Project.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:ApiVersion}/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private readonly IProductService _productService;
 
-        public ProductController(ApplicationContext context)
+        public ProductController(IProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
         [HttpGet]
         public IActionResult GetAllProducts()
         {
-            var products = _context.Products.ToList();
+            var products = _productService.GetAll();
             return Ok(products);
         }
 
-        [HttpPost]
-        public IActionResult CreateProduct(Product product)
+        [HttpGet("{id:guid}")]
+        public IActionResult GetProductById(Guid id)
         {
-            _context.Products.Add(product);
-            _context.SaveChanges();
-            return Ok("Ürün eklendi");
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult UpdateProduct(int id, Product product)
-        {
-            var value = _context.Products.Find(id);
-            if (value == null)
-                return NotFound("Ürün bulunamadı");
-
-            value.ProductName = product.ProductName;
-            value.ProductPrice = product.ProductPrice;
-            _context.SaveChanges();
-            return Ok("Ürün güncellendi");
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult DeleteProduct(int id)
-        {
-            var product = _context.Products.Find(id);
+            var product = _productService.GetById(id);
             if (product == null)
                 return NotFound("Ürün bulunamadı");
 
-            _context.Products.Remove(product);
-            _context.SaveChanges();
+            return Ok(product);
+        }
+
+        [HttpPost]
+        public IActionResult CreateProduct([FromBody] Product product)
+        {
+            if (product.ProductId == Guid.Empty)
+            {
+                product.ProductId = Guid.NewGuid();
+            }
+
+            _productService.Add(product);
+            return CreatedAtAction(nameof(GetProductById), new { id = product.ProductId }, "Ürün eklendi");
+        }
+
+        [HttpPut("{id:guid}")]
+        public IActionResult UpdateProduct(Guid id, [FromBody] Product product)
+        {
+            var existingProduct = _productService.GetById(id);
+            if (existingProduct == null)
+                return NotFound("Ürün bulunamadı");
+
+            if (product.ProductId != id)
+                return BadRequest("Ürün ID'si rota ID'si ile eşleşmiyor.");
+
+            _productService.Update(product);
+            return Ok("Ürün güncellendi");
+        }
+
+        [HttpDelete("{id:guid}")]
+        public IActionResult DeleteProduct(Guid id)
+        {
+            var existingProduct = _productService.GetById(id);
+            if (existingProduct == null)
+                return NotFound("Ürün bulunamadı");
+
+            _productService.Delete(id);
             return Ok("Ürün silindi");
         }
     }

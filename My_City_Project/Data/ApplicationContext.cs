@@ -17,6 +17,11 @@ namespace My_City_Project.Data
         public DbSet<Report> Reports { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
         public DbSet<Reseller> Resellers { get; set; }
-    }
+        public DbSet<User> Users { get; set; }
 
+        public static void Initialize(ApplicationContext context)
+        {
+            context.Database.Migrate();  
+        }
+    }
 }

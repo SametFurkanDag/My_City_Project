@@ -1,46 +1,59 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using My_City_Project.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using My_City_Project.Model.Entities;
+using My_City_Project.Services.Interfaces;
 
 namespace My_City_Project.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:ApiVersion}/[controller]")]
     [ApiController]
     public class PlaceController : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private readonly IPlaceService _placeService;
 
-        public PlaceController(ApplicationContext context)
+        public PlaceController(IPlaceService placeService)
         {
-            _context = context;
+            _placeService = placeService;
         }
 
         [HttpGet]
         public IActionResult GetAllPlaces()
         {
-            var places = _context.Places.ToList();
+            var places = _placeService.GetAllPlaces();
             return Ok(places);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetPlaceById(Guid id)
+        {
+            var place = _placeService.GetPlaceById(id);
+            if (place == null)
+                return NotFound("Place not found");
+            return Ok(place);
         }
 
         [HttpPost]
         public IActionResult CreatePlace(Places place)
         {
-            _context.Places.Add(place);
-            _context.SaveChanges();
-            return Ok("Yer eklendi");
+            _placeService.CreatePlace(place);
+            return CreatedAtAction(nameof(GetPlaceById), new { id = place.PlaceId }, place);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdatePlace(Guid id, Places place)
+        {
+            if (id != place.PlaceId)
+                return BadRequest("ID mismatch");
+
+            _placeService.UpdatePlace(place);
+            return Ok(place);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeletePlace(int id)
+        public IActionResult DeletePlace(Guid id)
         {
-            var place = _context.Places.Find(id);
-            if (place == null)
-                return NotFound("Yer bulunamadı");
-
-            _context.Places.Remove(place);
-            _context.SaveChanges();
-            return Ok("Yer silindi");
+            _placeService.DeletePlace(id);
+            return Ok("Place deleted successfully");
         }
     }
 }

@@ -1,10 +1,13 @@
-﻿namespace My_City_Project.Model.Entities
+﻿using System.ComponentModel.DataAnnotations;
+namespace My_City_Project.Model.Entities
 {
     public class Report
     {
-        public int ReportId { get; set; }
+        [Key]
+        public Guid ReportId { get; set; } = Guid.NewGuid();
         public string Title { get; set; }
         public string Content { get; set; }
         public DateTime ReportDate { get; set; }
     }
+
 }
