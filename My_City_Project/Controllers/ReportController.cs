@@ -1,44 +1,61 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using My_City_Project.Data;
 using My_City_Project.Model.Entities;
+using My_City_Project.Services.Interfaces;
 
 namespace My_City_Project.Controllers
 {
+
+    [ApiVersion("1.0")]
+    [Route("api/v{version:ApiVersion}/[controller]")]
     [ApiController]
-    [Route("api/[controller]")]
+    
     public class ReportController : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private readonly IReportService _reportService;
 
-        public ReportController(ApplicationContext context)
+        public ReportController(IReportService reportService)
         {
-            _context = context;
+            _reportService = reportService;
         }
 
         [HttpGet]
         public IActionResult GetAllReports()
         {
-            var reports = _context.Reports.ToList();
+            var reports = _reportService.GetAllReports();
             return Ok(reports);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetReportById(Guid id)
+        {
+            var report = _reportService.GetReportById(id);
+            if (report == null)
+                return NotFound("Report not found");
+            return Ok(report);
         }
 
         [HttpPost]
         public IActionResult CreateReport(Report report)
         {
-            _context.Reports.Add(report);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetAllReports), new { id = report.ReportId }, report);
+            _reportService.CreateReport(report);
+            return CreatedAtAction(nameof(GetReportById), new { id = report.ReportId }, report);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateReport(Guid id, Report report)
+        {
+            if (id != report.ReportId)
+                return BadRequest("ID mismatch");
+
+            _reportService.UpdateReport(report);
+            return Ok(report);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteReport(int id)
+        public IActionResult DeleteReport(Guid id)
         {
-            var report = _context.Reports.Find(id);
-            if (report == null) return NotFound();
-
-            _context.Reports.Remove(report);
-            _context.SaveChanges();
-            return Ok("Rapor silindi");
+            _reportService.DeleteReport(id);
+            return Ok("Report deleted successfully");
         }
     }
 }

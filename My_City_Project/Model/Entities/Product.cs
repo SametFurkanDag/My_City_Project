@@ -1,13 +1,15 @@
-﻿using System.Numerics;
+﻿using System; // Guid için eklendi
+using System.ComponentModel.DataAnnotations;
 
 namespace My_City_Project.Model.Entities
 {
     public class Product
     {
-        public int ProductId { get; set; }
+        [Key]
+        public Guid ProductId { get; set; } = Guid.NewGuid();
         public string ProductName { get; set; }
         public decimal ProductPrice { get; set; }
-        public int VendorId { get; set; }
-       
+        public Guid VendorId { get; set; }
     }
+
 }

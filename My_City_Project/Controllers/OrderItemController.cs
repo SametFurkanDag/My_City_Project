@@ -1,30 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using My_City_Project.Data;
 using My_City_Project.Model.Entities;
+using My_City_Project.Services.Interfaces;
+using System.Collections.Generic;
 
 namespace My_City_Project.Controllers
 {
+    [ApiVersion("1.0")]
+    [Route("api/v{version:ApiVersion}/[controller]")]
     [ApiController]
-    [Route("api/[controller]")]
     public class OrderItemController : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private readonly IOrderItemService _orderItemService;
 
-        public OrderItemController(ApplicationContext context)
+        public OrderItemController(IOrderItemService orderItemService)
         {
-            _context = context;
+            _orderItemService = orderItemService;
         }
 
         [HttpGet]
         public IActionResult GetAllOrderItems()
         {
-            return Ok(_context.OrderItems.ToList());
+            var orderItems = _orderItemService.GetAllOrderItems();
+            return Ok(orderItems);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetOrderItemById(int id)
+        public IActionResult GetOrderItemById(Guid id)
         {
-            var item = _context.OrderItems.Find(id);
+            var item = _orderItemService.GetOrderItemById(id);
             if (item == null) return NotFound();
             return Ok(item);
         }
@@ -32,35 +35,43 @@ namespace My_City_Project.Controllers
         [HttpPost]
         public IActionResult CreateOrderItem(OrderItem item)
         {
-            _context.OrderItems.Add(item);
-            _context.SaveChanges();
-            return Ok(item);
+            try
+            {
+                _orderItemService.CreateOrderItem(item);
+                return Ok(item);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateOrderItem(int id, OrderItem updatedItem)
+        public IActionResult UpdateOrderItem(Guid id, OrderItem updatedItem)
         {
-            var item = _context.OrderItems.Find(id);
-            if (item == null) return NotFound();
-
-            item.OrderId = updatedItem.OrderId;
-            item.ProductId = updatedItem.ProductId;
-            item.Quantity = updatedItem.Quantity;
-            item.Price = updatedItem.Price;
-
-            _context.SaveChanges();
-            return Ok(item);
+            try
+            {
+                _orderItemService.UpdateOrderItem(id, updatedItem);
+                return Ok(updatedItem);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteOrderItem(int id)
+        public IActionResult DeleteOrderItem(Guid id)
         {
-            var item = _context.OrderItems.Find(id);
-            if (item == null) return NotFound();
-
-            _context.OrderItems.Remove(item);
-            _context.SaveChanges();
-            return Ok();
+            try
+            {
+                _orderItemService.DeleteOrderItem(id);
+                return Ok("Sipariş öğesi silindi");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

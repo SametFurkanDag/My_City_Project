@@ -1,10 +1,14 @@
-﻿namespace My_City_Project.Model.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace My_City_Project.Model.Entities
 {
     public class Order
     {
-        public int OrderId { get; set; }       
-        public int CartId { get; set; }        
-        public decimal TotalAmount { get; set; } 
-        public DateTime OrderDate { get; set; }  
+        [Key]
+        public Guid OrderId { get; set; } = Guid.NewGuid();
+        public Guid CartId { get; set; }
+        public decimal TotalAmount { get; set; }
+        public DateTime OrderDate { get; set; }
     }
+
 }

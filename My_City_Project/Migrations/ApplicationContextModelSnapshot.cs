@@ -22,20 +22,14 @@ namespace My_City_Project.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("My_City_Project.Entities.Cart", b =>
+            modelBuilder.Entity("My_City_Project.Model.Entities.Cart", b =>
                 {
-                    b.Property<int>("CartId")
+                    b.Property<Guid>("CartId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CartId"));
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
@@ -48,16 +42,14 @@ namespace My_City_Project.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("My_City_Project.Entities.Order", b =>
+            modelBuilder.Entity("My_City_Project.Model.Entities.Order", b =>
                 {
-                    b.Property<int>("OrderId")
+                    b.Property<Guid>("OrderId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrderId"));
-
-                    b.Property<int>("CartId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("timestamp with time zone");
@@ -70,42 +62,34 @@ namespace My_City_Project.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("My_City_Project.Entities.OrderItem", b =>
+            modelBuilder.Entity("My_City_Project.Model.Entities.OrderItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("My_City_Project.Entities.Places", b =>
+            modelBuilder.Entity("My_City_Project.Model.Entities.Places", b =>
                 {
-                    b.Property<int>("PlaceId")
+                    b.Property<Guid>("PlaceId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PlaceId"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("PlaceLocation")
                         .IsRequired()
@@ -120,13 +104,11 @@ namespace My_City_Project.Migrations
                     b.ToTable("Places");
                 });
 
-            modelBuilder.Entity("My_City_Project.Entities.Product", b =>
+            modelBuilder.Entity("My_City_Project.Model.Entities.Product", b =>
                 {
-                    b.Property<int>("ProductId")
+                    b.Property<Guid>("ProductId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProductId"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -135,21 +117,19 @@ namespace My_City_Project.Migrations
                     b.Property<decimal>("ProductPrice")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("VendorId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("My_City_Project.Entities.Report", b =>
+            modelBuilder.Entity("My_City_Project.Model.Entities.Report", b =>
                 {
-                    b.Property<int>("ReportId")
+                    b.Property<Guid>("ReportId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ReportId"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -167,30 +147,11 @@ namespace My_City_Project.Migrations
                     b.ToTable("Reports");
                 });
 
-            modelBuilder.Entity("My_City_Project.Entities.Vendor", b =>
-                {
-                    b.Property<int>("VendorId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VendorId"));
-
-                    b.Property<string>("VendorName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("VendorId");
-
-                    b.ToTable("Vendors");
-                });
-
             modelBuilder.Entity("My_City_Project.Model.Entities.Reseller", b =>
                 {
-                    b.Property<int>("ResellerId")
+                    b.Property<Guid>("ResellerId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ResellerId"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ResellerLocation")
                         .IsRequired()
@@ -205,23 +166,42 @@ namespace My_City_Project.Migrations
                     b.ToTable("Resellers");
                 });
 
-            modelBuilder.Entity("My_City_Project.Entities.OrderItem", b =>
+            modelBuilder.Entity("My_City_Project.Model.Entities.User", b =>
                 {
-                    b.HasOne("My_City_Project.Entities.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                    b.HasOne("My_City_Project.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Navigation("Order");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Navigation("Product");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("My_City_Project.Model.Entities.Vendor", b =>
+                {
+                    b.Property<Guid>("VendorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("VendorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("VendorId");
+
+                    b.ToTable("Vendors");
                 });
 #pragma warning restore 612, 618
         }

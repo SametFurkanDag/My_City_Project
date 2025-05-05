@@ -1,65 +1,80 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using My_City_Project.Data;
 using My_City_Project.Model.Entities;
+using My_City_Project.Services.Implementations;
+using My_City_Project.Services.Interfaces;
 
 namespace My_City_Project.Controllers
 {
+    [ApiVersion("1.0")]
+    [Route("api/v{version:ApiVersion}/[controller]")]
     [ApiController]
-    [Route("api/[controller]")]
+    
     public class ResellerController : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private readonly IResellerService _resellerService;
 
-        public ResellerController(ApplicationContext context)
+        public ResellerController(IResellerService resellerService)
         {
-            _context = context;
+            _resellerService = resellerService;
         }
 
+        
         [HttpGet]
         public IActionResult GetAllResellers()
         {
-            var resellers = _context.Resellers.ToList();
+            var resellers = _resellerService.GetAllResellers();
             return Ok(resellers);
         }
 
+       
         [HttpGet("{id}")]
-        public IActionResult GetReseller(int id)
+        public IActionResult GetResellerById(Guid id)
         {
-            var reseller = _context.Resellers.Find(id);
-            if (reseller == null) return NotFound();
+            var reseller = _resellerService.GetResellerById(id);
+            if (reseller == null)
+                return NotFound("Reseller not found");
             return Ok(reseller);
         }
 
+      
         [HttpPost]
         public IActionResult CreateReseller(Reseller reseller)
         {
-            _context.Resellers.Add(reseller);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetReseller), new { id = reseller.ResellerId }, reseller);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult UpdateReseller(int id, Reseller updatedReseller)
-        {
-            var reseller = _context.Resellers.Find(id);
-            if (reseller == null) return NotFound();
-
-            reseller.ResellerName = updatedReseller.ResellerName;
-            reseller.ResellerLocation = updatedReseller.ResellerLocation;
-
-            _context.SaveChanges();
+            _resellerService.CreateReseller(reseller);
             return Ok(reseller);
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteReseller(int id)
+       
+        [HttpPut("{id}")]
+        public IActionResult UpdateReseller(Guid id, Reseller reseller)
         {
-            var reseller = _context.Resellers.Find(id);
-            if (reseller == null) return NotFound();
+            if (id != reseller.ResellerId)
+                return BadRequest("ID mismatch");
 
-            _context.Resellers.Remove(reseller);
-            _context.SaveChanges();
-            return Ok("Reseller deleted successfully");
+            _resellerService.UpdateReseller(reseller);
+            
+            return Ok(reseller);
         }
+
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteReseller(Guid id)
+        {
+            var existingReseller = _resellerService.GetResellerById(id);
+            if (existingReseller == null)
+                return NotFound("Reseller bulunamadı");
+
+            try
+            {
+                _resellerService.DeleteReseller(id);  
+                return Ok("Reseller başarıyla silindi");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Reseller silinirken bir hata oluştu");
+            }
+        }
+
+
     }
 }

@@ -1,30 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using My_City_Project.Data;
 using My_City_Project.Model.Entities;
+using My_City_Project.Services.Interfaces;
+using System.Collections.Generic;
 
 namespace My_City_Project.Controllers
 {
+    [ApiVersion("1.0")]
+    [Route("api/v{version:ApiVersion}/[controller]")]
     [ApiController]
-    [Route("api/[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly ApplicationContext _context;
+        private readonly IOrderService _orderService;
 
-        public OrderController(ApplicationContext context)
+        public OrderController(IOrderService orderService)
         {
-            _context = context;
+            _orderService = orderService;
         }
 
         [HttpGet]
         public IActionResult GetAllOrders()
         {
-            return Ok(_context.Orders.ToList());
+            var orders = _orderService.GetAllOrders();
+            return Ok(orders);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetOrderById(int id)
         {
-            var order = _context.Orders.Find(id);
+            var order = _orderService.GetOrderById(id);
             if (order == null) return NotFound();
             return Ok(order);
         }
@@ -32,41 +35,43 @@ namespace My_City_Project.Controllers
         [HttpPost]
         public IActionResult CreateOrder(Order order)
         {
-            var cart = _context.Carts.Find(order.CartId);
-            if (cart == null)
-                return NotFound("Sepet bulunamadı");
-
-            order.TotalAmount = cart.TotalPrice;
-            order.OrderDate = DateTime.Now;
-
-            _context.Orders.Add(order);
-            _context.SaveChanges();
-            return Ok(order);
+            try
+            {
+                _orderService.CreateOrder(order);
+                return Ok(order);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdateOrder(int id, Order updatedOrder)
         {
-            var order = _context.Orders.Find(id);
-            if (order == null) return NotFound();
-
-            order.CartId = updatedOrder.CartId;
-            order.TotalAmount = updatedOrder.TotalAmount;
-            order.OrderDate = updatedOrder.OrderDate;
-
-            _context.SaveChanges();
-            return Ok(order);
+            try
+            {
+                _orderService.UpdateOrder(id, updatedOrder);
+                return Ok(updatedOrder);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteOrder(int id)
         {
-            var order = _context.Orders.Find(id);
-            if (order == null) return NotFound();
-
-            _context.Orders.Remove(order);
-            _context.SaveChanges();
-            return Ok();
+            try
+            {
+                _orderService.DeleteOrder(id);
+                return Ok("Sipariş silindi");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }
